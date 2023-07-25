@@ -1,0 +1,24 @@
+newmtl light1_L7
+Ka 0 0 0
+Kd 0.7843137 0.7843137 0.7843137
+d 1
+Tr 1
+map_Ka light1_L7.png
+map_Kd light1_L7.png
+map_d light1_L7.png
+newmtl light2_L7
+Ka 0 0 0
+Kd 0.7843137 0.7843137 0.7843137
+d 1
+Tr 1
+map_Ka light2_L7.png
+map_Kd light2_L7.png
+map_d light2_L7.png
+newmtl lightwh_ita
+Ka 0 0 0
+Kd 0.7843137 0.7843137 0.7843137
+d 1
+Tr 1
+map_Ka lightwh_ita.png
+map_Kd lightwh_ita.png
+map_d lightwh_ita.png
