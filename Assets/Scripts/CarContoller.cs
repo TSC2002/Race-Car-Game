@@ -4,97 +4,64 @@ using UnityEngine;
 
 public class CarContoller : MonoBehaviour
 {
-    public WheelCollider RuedaIzquierdaDelantera;
-    public WheelCollider RuedaDerechaDelantera;
-    public WheelCollider RuedaIzquierdaTrasera;
-    public WheelCollider RuedaDerechaTrasera;
+    [SerializeField] private Transform RuedaIzquierdaTraseraTransform; //Con el SerializeField que se usa para modificar varias clases, uso el Transform que se usa para la Posicion, Rotacion y Escala//
+    [SerializeField] private Transform RuedaDerechaTraseraTransform;
+    [SerializeField] private Transform RuedaDerechaDelanteraTransform;
+    [SerializeField] private Transform RuedaIzquierdaDelanteraTransform;
 
-    public float FuerzaDelMotor;
-    public float MaximaFuerzaDelMotor;
+    [SerializeField] private WheelCollider RuedaIzquierdaTraseraCollider;
+    [SerializeField] private WheelCollider RuedaDerechaTraseraCollider;
+    [SerializeField] private WheelCollider RuedaDerechaDelanteraCollider;
+    [SerializeField] private WheelCollider RuedaIzquierdaDelanteraCollider;
 
-    public float GiroDeLasRuedas;
-    public float MaximoGiroDeLasRuedas;
+    private Rigidbody AutoRigidbody;
 
-    public float Freno;
-    public bool EstoyFrenando;
-
-    public Vector3 CentroDeMasas;
-
-    public Vector3 PosicionDeLaRueda;
-    public Quaternion RotacionDeLaRueda;
-
-    void Start()
+    public float Fuerza; //El float se usa para los numeros decimales//
+    public float MaximoAngulo;
+    public int MaximaVelocidad; //EL int se usa para los numeros enteros//
+    public int MaximaVelocidadDeRetroceso;
+    public int Freno;
+    private void Start()
     {
-        FuerzaDelMotor = 0.0f;
-        MaximaFuerzaDelMotor = 800.0f;
-        GiroDeLasRuedas = 0.0f;
-        MaximoGiroDeLasRuedas = 25.0f;
-        CentroDeMasas = new Vector3(0.0f, 0.0f, 0.0f);
-        EstoyFrenando = false;
-
-        this.gameObject.GetComponent<Rigidbody>().centerOfMass = CentroDeMasas;
+        AutoRigidbody = GetComponent<Rigidbody>(); //El auto arranca con el Rigidbody que se le asigno//
     }
 
-    void Update()
+    private void FixedUpdate() //Se quiere con el FixedUpdate hacer cambios en el tiempo y que estos cambios se apliquen en intervalos regulares// 
     {
-        FuerzaDelMotor = MaximaFuerzaDelMotor * Input.GetAxis("Vertical");
-        GiroDeLasRuedas = MaximoGiroDeLasRuedas * Input.GetAxis("Horizontal");
-        if (Input.GetButton("Jump"))
+        RuedaIzquierdaTraseraCollider.motorTorque = Fuerza * Input.GetAxis("Vertical"); // Las ruedas traseras van a tener una fuerza de impulso de manera vertical al presionar la tecla//
+        RuedaDerechaTraseraCollider.motorTorque = Fuerza * Input.GetAxis("Vertical");// Las ruedas traseras van a tener una fuerza de impulso de manera vertical al presionar la tecla//
+
+        RuedaDerechaDelanteraCollider.motorTorque = MaximoAngulo * Input.GetAxis("Horizontal"); //Las ruedas delanteras van a tener un maximo angulo de manera horizontal al presionar la tecla//
+        RuedaIzquierdaDelanteraCollider.motorTorque = MaximoAngulo * Input.GetAxis("Horizontal");
+
+        if (Input.GetKey(KeyCode.Space))//Si se presiona la tecla espacio las ruedas traseras frenan
         {
-            EstoyFrenando = true;
+            RuedaIzquierdaTraseraCollider.brakeTorque = Freno;
+            RuedaDerechaTraseraCollider.brakeTorque = Freno;
         }
+
         else
         {
-            EstoyFrenando = false;
+            RuedaIzquierdaTraseraCollider.brakeTorque = 0;
+            RuedaDerechaTraseraCollider.brakeTorque = 0;
         }
 
-        RuedaIzquierdaDelantera.steerAngle = GiroDeLasRuedas;
-        RuedaDerechaDelantera.steerAngle = GiroDeLasRuedas;
-
-        RuedaIzquierdaDelantera.motorTorque = FuerzaDelMotor;
-        RuedaDerechaDelantera.motorTorque = FuerzaDelMotor;
-        RuedaIzquierdaTrasera.motorTorque = FuerzaDelMotor;
-        RuedaDerechaTrasera.motorTorque = FuerzaDelMotor;
-
-        if (EstoyFrenando)
-        {
-            RuedaIzquierdaDelantera.brakeTorque = 400.0f;
-            RuedaDerechaDelantera.brakeTorque = 400.0f;
-            RuedaIzquierdaTrasera.brakeTorque = 400.0f;
-            RuedaDerechaTrasera.brakeTorque = 400.0f;
-        }
-        else
-        {
-            RuedaIzquierdaDelantera.brakeTorque = 0.0f;
-            RuedaDerechaDelantera.brakeTorque = 0.0f;
-            RuedaIzquierdaTrasera.brakeTorque = 0.0f;
-            RuedaDerechaTrasera.brakeTorque = 0.0f;
-        }
-
-        //Rueda Izquierda Delamtera
-        Transform ruedaID = RuedaIzquierdaDelantera.gameObject.transform.GetChild(0);
-        RuedaIzquierdaDelantera.GetComponent<WheelCollider>().GetWorldPose(out PosicionDeLaRueda, out RotacionDeLaRueda);
-        ruedaID.transform.position = PosicionDeLaRueda;
-        ruedaID.transform.rotation = RotacionDeLaRueda;
-
-        //Rueda Derecha Delantera
-        Transform ruedaDD = RuedaDerechaDelantera.gameObject.transform.GetChild(0);
-        RuedaDerechaDelantera.GetComponent<WheelCollider>().GetWorldPose(out PosicionDeLaRueda, out RotacionDeLaRueda);
-        ruedaDD.transform.position = PosicionDeLaRueda;
-        ruedaDD.transform.rotation = RotacionDeLaRueda;
-
-        //Rueda Izquierda Trasera
-        Transform ruedaIT = RuedaIzquierdaTrasera.gameObject.transform.GetChild(0);
-        RuedaIzquierdaTrasera.GetComponent<WheelCollider>().GetWorldPose(out PosicionDeLaRueda, out RotacionDeLaRueda);
-        ruedaIT.transform.position = PosicionDeLaRueda;
-        ruedaIT.transform.rotation = RotacionDeLaRueda;
-
-        //Rueda Derecha Trasera
-        Transform ruedaDT = RuedaDerechaTrasera.gameObject.transform.GetChild(0);
-        RuedaDerechaTrasera.GetComponent<WheelCollider>().GetWorldPose(out PosicionDeLaRueda, out RotacionDeLaRueda);
-        ruedaDT.transform.position = PosicionDeLaRueda;
-        ruedaDT.transform.rotation = RotacionDeLaRueda;
-
+        RotacionDelaRueda(RuedaIzquierdaTraseraCollider, RuedaIzquierdaTraseraTransform);
+        RotacionDelaRueda(RuedaDerechaTraseraCollider, RuedaDerechaTraseraTransform);
+        RotacionDelaRueda(RuedaDerechaDelanteraCollider, RuedaDerechaDelanteraTransform);
+        RotacionDelaRueda(RuedaIzquierdaDelanteraCollider, RuedaIzquierdaDelanteraTransform);
     }
+
+    private void RotacionDelaRueda(WheelCollider collider, Transform transform) //Se hizo este void para que este activo los colliders y los transforms//
+    {
+        Vector3 Posicion; //Se quiere ver la posicion en 3 dimensiones//
+        Quaternion Rotacion; // Representa al Vector3 para codificar las rotaciones tridimensionales//
+
+        collider.GetWorldPose(out Posicion, out Rotacion); //Configura la Posicion y la Rotacion a las ruedas//
+
+        transform.rotation = Rotacion;
+        transform.position = Posicion;
+    }
+
 }
 
