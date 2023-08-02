@@ -15,14 +15,16 @@ public class CarContoller : MonoBehaviour
     public int Velocidad;
     public int Frenar;
 
+   
+    void Start()
+    {
+        
+    }
 
     void Update()
     {
         TransformRuedaDerechaDelantera.localEulerAngles = new Vector3(0, ColliderRuedaDerechaTrasera.steerAngle, 0);
         TransformRuedaIzquierdaDelantera.localEulerAngles = new Vector3(0, ColliderRuedaIzquierdaTrasera.steerAngle, 0);
-      
-      
-
     }
 
 
@@ -43,8 +45,6 @@ void FixedUpdate()
             ColliderRuedaDerechaDelantera.brakeTorque = 0;
             ColliderRuedaIzquierdaDelantera.brakeTorque = 0;
         }
-
-        
     }
 }
 
